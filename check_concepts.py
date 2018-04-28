@@ -1,10 +1,10 @@
-def get_concepts_train(training_filename)
+def get_concepts_train(training_filename):
     concept_set = set()
 
     with open(training_filename) as infile:
         cur_concept = []
         for line in infile:
-            word, tag = line
+            word, tag = line.strip().split()
             if cur_concept and tag != 'I':
                 concept_set.add(" ".join(cur_concept))
                 cur_concept = []
@@ -16,7 +16,7 @@ def get_concepts_train(training_filename)
                 found_concept_set.add(" ".join(cur_concept))
     return concept_set
 
-def get_concepts_test(training_filename)
+def get_concepts_test(training_filename):
     concept_set = set()
     found_concept_set = set()
 
@@ -32,14 +32,14 @@ def get_concepts_test(training_filename)
         cur_concept = []
         pred_tags = []
         for line in infile:
-            word, true_tag, pred_tag
-            if cur_concept and tag != 'I':
+            word, true_tag, pred_tag = line.strip().split()
+            if cur_concept and true_tag != 'I':
                 concept_set.add(" ".join(cur_concept))
-                if correct_tag_seq(pred_tags):
+                if correct_tag_seq(pred_tags) and pred_tag != 'I':
                     found_concept_set.add(" ".join(cur_concept))
                 cur_concept = []
                 pred_tags = []
-            if tag == 'B' or tag == 'I':
+            if true_tag == 'B' or true_tag == 'I':
                 cur_concept.append(word)
                 pred_tags.append(pred_tag)
         if cur_concept:
