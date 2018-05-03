@@ -2,6 +2,15 @@
 #Author: Robert Guthrie
 #http://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
 
+PRINT_METRICS = True
+TRAIN_MODEL = True
+
+MODEL_FILENAME = 'cv_model.pt'
+TRAIN_DATA_FILENAME = 'ml-tagged-files/Computer Vision - Algorithms and Applications.txt'
+CONCEPT_TRAIN_DATA_FILENAME = 'concept_train_data_CV.txt'
+CONCEPT_TEST_DATA_FILENAME = 'concept_test_data_CV.txt'
+
+
 import torch
 import torch.autograd as autograd
 import torch.nn as nn
@@ -29,7 +38,7 @@ def has_concept(data):
     return new_data
 
 def train_to_file(training_data):
-    with open('concept_train_data.txt', "w") as outfile:
+    with open(CONCEPT_TRAIN_DATA_FILENAME, "w") as outfile:
         for sentence, tags in training_data:
             for word, tag in zip(sentence, tags):
                 outfile.write(word + " " + tag + "\n")
@@ -37,15 +46,15 @@ def train_to_file(training_data):
 
 def test_to_file(testing_data, predictions, ix_to_tag):
     pred_index = 0
-    print(predictions)
-    with open('concept_test_data.txt', "w") as outfile:
+    #print(predictions)
+    with open(CONCEPT_TEST_DATA_FILENAME, "w") as outfile:
         for sentence, tags in testing_data:
             for word, tag in zip(sentence, tags):
                 outfile.write(word + " " + tag + " " + ix_to_tag[predictions[pred_index][0]] +  "\n")
                 pred_index += 1
             outfile.write(". O O\n")
 
-training_data, testing_data = train_test_split(has_concept(read_data_from_file('ml-tagged-files/Bishop - Pattern Recognition And Machine Learning - Springer  2006.txt')), random_state=42)
+training_data, testing_data = train_test_split(has_concept(read_data_from_file(TRAIN_DATA_FILENAME)), random_state=42)
 
 
 print('Train Size:', len(training_data))
@@ -87,33 +96,39 @@ def print_metrics():
     test_to_file(testing_data, test_pred, ix_to_tag)
 
 train_to_file(training_data)
-for epoch in range(8): #TODO change back to 8
-    i = 0
-    for sentence, tags in training_data:
-        if i % 100 == 0:
-            print(i)
-        i+= 1
-        # Step 1. Remember that Pytorch accumulates gradients.
-        # We need to clear them out before each instance
-        model.zero_grad()
 
-        # Also, we need to clear out the hidden state of the LSTM,
-        # detaching it from its history on the last instance.
-        model.hidden = model.init_hidden()
 
-        # Step 2. Get our inputs ready for the network, that is, turn them into
-        # Variables of word indices.
-        sentence_in = prepare_sequence(sentence, word_to_ix)
-        targets = prepare_sequence(tags, tag_to_ix)
+if TRAIN_MODEL:
+    for epoch in range(1, 16): #TODO change back to 8
+        i = 0
+        for sentence, tags in training_data:
+            if i % 100 == 0:
+                print(i)
+            i+= 1
+            # Step 1. Remember that Pytorch accumulates gradients.
+            # We need to clear them out before each instance
+            model.zero_grad()
 
-        # Step 3. Run our forward pass.
-        tag_scores = model(sentence_in)
+            # Also, we need to clear out the hidden state of the LSTM,
+            # detaching it from its history on the last instance.
+            model.hidden = model.init_hidden()
 
-        # Step 4. Compute the loss, gradients, and update the parameters by
-        #  calling optimizer.step()
-        loss = loss_function(tag_scores, targets)
-        loss.backward()
-        optimizer.step()
-    print("Epoch:", epoch)
-print_metrics()
+            # Step 2. Get our inputs ready for the network, that is, turn them into
+            # Variables of word indices.
+            sentence_in = prepare_sequence(sentence, word_to_ix)
+            targets = prepare_sequence(tags, tag_to_ix)
 
+            # Step 3. Run our forward pass.
+            tag_scores = model(sentence_in)
+
+            # Step 4. Compute the loss, gradients, and update the parameters by
+            #  calling optimizer.step()
+            loss = loss_function(tag_scores, targets)
+            loss.backward()
+            optimizer.step()
+        print("Epoch:", epoch)
+        print_metrics()
+    torch.save(model.state_dict(), MODEL_FILENAME)
+else:
+    model.load_state_dict(torch.load(MODEL_FILENAME))
+    print_metrics()
