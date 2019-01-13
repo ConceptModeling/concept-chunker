@@ -2,26 +2,19 @@
 #Author: Robert Guthrie
 #http://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
 
-PRINT_METRICS = True
-TRAIN_MODEL = True
-
-MODEL_FILENAME = 'cv_model.pt'
-TRAIN_DATA_FILENAME = 'ml-tagged-files/Computer Vision - Algorithms and Applications.txt'
-CONCEPT_TRAIN_DATA_FILENAME = 'concept_train_data_CV.txt'
-CONCEPT_TEST_DATA_FILENAME = 'concept_test_data_CV.txt'
-
-
 import torch
 import torch.autograd as autograd
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-from chunker_io import read_data_from_file, read_data_from_dir
+from chunker_io import read_data_from_file
 from lstm_tagger import LSTMTagger
 
 from sklearn.model_selection import train_test_split
-import sklearn.metrics as metrics 
+import sklearn.metrics as metrics
+
+import argparse
 
 torch.manual_seed(37)
 
@@ -29,16 +22,6 @@ def prepare_sequence(seq, to_ix):
     idxs = [to_ix.get(w, 0) for w in seq]
     tensor = torch.LongTensor(idxs)
     return autograd.Variable(tensor)
-
-def test_to_file(testing_data, predictions, ix_to_tag):
-    pred_index = 0
-    #print(predictions)
-    with open(CONCEPT_TEST_DATA_FILENAME, "w") as outfile:
-        for sentence, tags in testing_data:
-            for word, tag in zip(sentence, tags):
-                outfile.write(word + " " + tag + " " + ix_to_tag[predictions[pred_index][0]] +  "\n")
-                pred_index += 1
-            outfile.write(". O O\n")
 
 def print_metrics():
     #http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
@@ -60,6 +43,20 @@ def print_metrics():
     test_to_file(testing_data, test_pred, ix_to_tag)
 
 def main():
+    parser = argparse.ArgumentParser(description=
+        '''Trains the model''')
+    parser.add_argument('--train', type=bool, default=True)
+    parser.add_argument('--print_metrics', type=bool, default=True)
+
+    parser.add_argument('--model_filename', '-m')
+
+    parser.add_argument('--word_ix_filename', '-w')
+    parser.add_argument('--train_filename', '-t')
+    parser.add_argument('--dev_filename', '-d')
+    args = parser.parse_args()
+    print(args)
+    return
+
     tag_to_ix = {'B': 0, 'I': 1, 'O': 2}
     ix_to_tag = {0: 'B', 1: 'I', 2: 'O'}
 
@@ -71,7 +68,7 @@ def main():
     loss_function = nn.NLLLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.1)
 
-    if TRAIN_MODEL:
+    if args.train:
         for epoch in range(1, 16): #TODO change back to 8
             i = 0
             for sentence, tags in training_data:
@@ -99,11 +96,12 @@ def main():
                 loss = loss_function(tag_scores, targets)
                 loss.backward()
                 optimizer.step()
-            print("Epoch:", epoch)
-            print_metrics()
-        torch.save(model.state_dict(), MODEL_FILENAME)
+            if args.print_metrics
+                print("Epoch:", epoch)
+                print_metrics()
+        torch.save(model.state_dict(), args.model_filename)
     else:
-        model.load_state_dict(torch.load(MODEL_FILENAME))
+        model.load_state_dict(torch.load(args.model_filename))
         print_metrics()
 
 if __name__ == '__main__':

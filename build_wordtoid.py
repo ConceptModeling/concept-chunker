@@ -1,5 +1,6 @@
 from collections import Counter
 from chunker_io import read_data_from_file
+import argparse
 
 def get_word_counts(training_data):
     counter = Counter()
@@ -24,9 +25,19 @@ def read_word_ix(input_file):
     return word_to_ix
 
 def main():
-    training_data = read_data_from_file('trainfilename')
+    parser = argparse.ArgumentParser(description=
+        '''Makes a file with each stemmed word from the Vocabulary.
+        Line number - 1 corresponds to the index in the embedding table.''')
+    parser.add_argument('--input_filename', '-i')
+                        #dest='accumulate',
+                        #default=max,
+                        #help='sum the integers (default: find the max)')
+    parser.add_argument('--output_filename', '-o')
+    args = parser.parse_args()
+
+    training_data = read_data_from_file(args.input_file)
     word_counts = get_word_counts(training_data)
-    write_word_ix(word_counts)
+    write_word_ix(word_counts, args.output_file)
     
 if __name__ == '__main__':
     main()
