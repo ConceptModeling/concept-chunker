@@ -1,4 +1,4 @@
-def read_data_from_file(filename, sep=' '):
+def read_data_from_file(filename, sep='\t'):
     data = []
     sent_counter = 0
     with open(filename) as infile:

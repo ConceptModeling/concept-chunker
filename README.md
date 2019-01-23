@@ -22,12 +22,16 @@ TBD
 ### How to Run
 1. python3 split_train_data.py (to split textbook data into train and development)
 2. python3 build_wordtoid.py (To build mapping from words to indices in embedding layer)
-3. python3 main.py to train model
+3. python3 train.py to train model
 4. Test on lecture data
 
+### Example:
+1. python3 split_train_data.py -i zhai_tb_iob_tags.txt -t zhai_tb_train.txt -d zhai_tb_dev.txt
+2. python3 build_wordtoid.py -i zhai_tb_train.txt -o zhai_tb_wordids.txt
+3. python3 train.py -m zhai_tb_model.pt -w zhai_tb_wordids.txt -t zhai_tb_train.txt -d zhai_tb_dev.txt
+
 ### TODO:
-- Add preprocessing like stemming
 - Test bidirectional model
-- Implement argparse
 - Test out different embedding and hidden dimensions
 - Test out batch training
+- Use unk tags for least frequent words?
