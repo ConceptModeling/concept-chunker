@@ -66,12 +66,12 @@ def main():
     EMBEDDING_DIM = 32
     HIDDEN_DIM = 32
 
-    model = LSTMTagger(EMBEDDING_DIM, HIDDEN_DIM, len(word_to_ix) + 1, len(tag_to_ix))
+    model = LSTMTagger(EMBEDDING_DIM, HIDDEN_DIM, len(word_to_ix) + 1, len(tag_to_ix), bidirectional=True)
     loss_function = nn.NLLLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.1)
 
     if args.train:
-        for epoch in range(1, 10): #9 Epochs
+        for epoch in range(1, 15): #9 Epochs
             i = 0
             for sentence, tags in training_data:
                 if i % 100 == 0:

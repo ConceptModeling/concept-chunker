@@ -7,18 +7,23 @@ torch.manual_seed(37)
 
 class LSTMTagger(nn.Module):
 
-    def __init__(self, embedding_dim, hidden_dim, vocab_size, tagset_size):
+    def __init__(self, embedding_dim, hidden_dim, vocab_size, tagset_size, bidirectional=False):
         super(LSTMTagger, self).__init__()
+        self.bidirectional = bidirectional
         self.hidden_dim = hidden_dim
 
         self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
 
         # The LSTM takes word embeddings as inputs, and outputs hidden states
         # with dimensionality hidden_dim.
-        self.lstm = nn.LSTM(embedding_dim, hidden_dim)
+        self.lstm = nn.LSTM(embedding_dim, hidden_dim, bidirectional=bidirectional)
 
         # The linear layer that maps from hidden state space to tag space
-        self.hidden2tag = nn.Linear(hidden_dim, tagset_size)
+        if self.bidirectional:
+            n = 2
+        else:
+            n = 1 
+        self.hidden2tag = nn.Linear(n*hidden_dim, tagset_size)
         self.hidden = self.init_hidden()
 
     def init_hidden(self):
@@ -26,8 +31,12 @@ class LSTMTagger(nn.Module):
         # Refer to the Pytorch documentation to see exactly
         # why they have this dimensionality.
         # The axes semantics are (num_layers, minibatch_size, hidden_dim)
-        return (autograd.Variable(torch.zeros(1, 1, self.hidden_dim)),
-                autograd.Variable(torch.zeros(1, 1, self.hidden_dim)))
+        if self.bidirectional:
+            n = 2
+        else:
+            n = 1
+        return (autograd.Variable(torch.zeros(n, 1, self.hidden_dim)),
+                autograd.Variable(torch.zeros(n, 1, self.hidden_dim)))
 
     def forward(self, sentence):
         embeds = self.word_embeddings(sentence)
