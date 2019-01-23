@@ -1,6 +1,7 @@
 from collections import Counter
 from chunker_io import read_data_from_file
 import argparse
+from itertools import takewhile
 
 def get_word_counts(training_data):
     counter = Counter()
@@ -9,15 +10,16 @@ def get_word_counts(training_data):
             counter[word] += 1
     return counter
 
-def write_word_ix(word_counts, output_file, vocab_size=500000):
+def write_word_ix(word_counts, output_file, vocab_size=500000, min_count=2):
     word_tuples = word_counts.most_common(vocab_size) # Does this work if vocab_size > len(word_count)
+    word_tuples = word_tuples.takewhile(lambda t: t[0] >= min_count)
     with open(output_file, 'w') as outfile:
         for tup in word_tuples:
             outfile.write(tup[0] + '\n')
 
 def read_word_ix(input_file):
     word_to_ix = {}
-    index = 0
+    index = 1 #0 index is for out of vocabulary
     with open(input_file) as infile:
         for word in infile:
             word = word.strip()
