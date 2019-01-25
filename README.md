@@ -29,6 +29,7 @@ TBD
 1. python3 split_train_data.py -i zhai_tb_iob_tags.txt -t zhai_tb_train.txt -d zhai_tb_dev.txt
 2. python3 build_wordtoid.py -i zhai_tb_train.txt -o zhai_tb_wordids.txt
 3. python3 train.py -m zhai_tb_model.pt -w zhai_tb_wordids.txt -t zhai_tb_train.txt -d zhai_tb_dev.txt
+4. python3 eval.py -t zhai_tb_dev.txt -m zhai_tb_model.pt -w zhai_tb_wordids.txt
 
 ### TODO:
 - Test bidirectional model
