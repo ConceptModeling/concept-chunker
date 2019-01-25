@@ -1,3 +1,5 @@
+# Not currently used, need to modify for new format
+
 def get_concepts_train(training_filename):
     concept_set = set()
 
