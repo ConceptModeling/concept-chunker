@@ -37,11 +37,13 @@ def main():
                         #default=max,
                         #help='sum the integers (default: find the max)')
     parser.add_argument('--output_filename', '-o')
+    parser.add_argument('--min_count', '-c', type=int, default=2)
+
     args = parser.parse_args()
 
     training_data = read_data_from_file(args.input_filename)
     word_counts = get_word_counts(training_data)
-    write_word_ix(word_counts, args.output_filename)
+    write_word_ix(word_counts, args.output_filename, min_count=args.min_count)
     
 if __name__ == '__main__':
     main()

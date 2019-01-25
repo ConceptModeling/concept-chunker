@@ -18,6 +18,7 @@ TBD
 2. Install sklearn
 3. Install spacy
 4. python3 -m spacy download en_core_web_sm
+5. Install matplotlib (if you want to do the graph plotting code)
 
 ### How to Run
 1. python3 split_train_data.py (to split textbook data into train and development)
