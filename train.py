@@ -23,6 +23,7 @@ def prepare_sequence(seq, to_ix):
     return autograd.Variable(tensor)
 
 def print_metrics(model, testing_data, word_to_ix, tag_to_ix):
+    model.eval()
     #http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
     test_pred = []
     test_true = []
@@ -74,6 +75,7 @@ def main():
                 if i % 100 == 0:
                     print(i)
                 i+= 1
+                model.train()
                 # Step 1. Remember that Pytorch accumulates gradients.
                 # We need to clear them out before each instance
                 model.zero_grad()

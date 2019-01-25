@@ -25,7 +25,6 @@ def main():
 
     model = LSTMTagger(EMBEDDING_DIM, HIDDEN_DIM, len(word_to_ix) + 1, len(tag_to_ix), bidirectional=True)
     model.load_state_dict(torch.load(args.model_filename))
-    model.eval()
 
     testing_data = read_data_from_file(args.test_filename)
     print_metrics(model, testing_data, word_to_ix, tag_to_ix)
