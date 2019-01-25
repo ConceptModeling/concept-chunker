@@ -5,14 +5,12 @@
 import torch
 import torch.autograd as autograd
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 
 from chunker_io import read_data_from_file
 from lstm_tagger import LSTMTagger
 from build_wordtoid import read_word_ix
 
-from sklearn.model_selection import train_test_split
 import sklearn.metrics as metrics
 
 import argparse
@@ -41,7 +39,6 @@ def print_metrics(model, testing_data, word_to_ix, tag_to_ix):
     print('F1:', metrics.f1_score(test_true, test_pred, average='macro'))
     print('Precision:', metrics.precision_score(test_true, test_pred, average='macro'))
     print('Recall:', metrics.recall_score(test_true, test_pred, average='macro'))
-    #test_to_file(testing_data, test_pred, ix_to_tag)
 
 def main():
     parser = argparse.ArgumentParser(description=
@@ -71,7 +68,7 @@ def main():
     optimizer = optim.SGD(model.parameters(), lr=0.1)
 
     if args.train:
-        for epoch in range(1, 15): #9 Epochs
+        for epoch in range(1, 15 + 1): # 15 Epochs
             i = 0
             for sentence, tags in training_data:
                 if i % 100 == 0:

@@ -12,7 +12,7 @@ def get_word_counts(training_data):
 
 def write_word_ix(word_counts, output_file, vocab_size=500000, min_count=2):
     word_tuples = word_counts.most_common(vocab_size) # Does this work if vocab_size > len(word_count)
-    word_tuples = word_tuples.takewhile(lambda t: t[0] >= min_count)
+    word_tuples = takewhile(lambda t: t[1] >= min_count, word_tuples)
     with open(output_file, 'w') as outfile:
         for tup in word_tuples:
             outfile.write(tup[0] + '\n')
