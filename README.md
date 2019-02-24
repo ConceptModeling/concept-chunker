@@ -31,7 +31,8 @@ TBD
 2. python3 build_wordtoid.py -i zhai_tb_train.txt -o zhai_tb_wordids.txt
 3. python3 train.py -m zhai_tb_model.pt -w zhai_tb_wordids.txt -t zhai_tb_train.txt -d zhai_tb_dev.txt
 4. python3 eval.py -t zhai_tb_dev.txt -m zhai_tb_model.pt -w zhai_tb_wordids.txt
-
+5. python3 get_concept_embed.py -m zhai_tb_model.pt -w zhai_tb_wordids.txt -c zhai_concepts.txt > zhai_concept_embeddings.txt
+python3 get_concept_embed.py -m han_tb_model.pt -w han_tb_wordids.txt -c han_concepts.txt > han_concept_embeddings.txt
 ### TODO:
 - Test bidirectional model
 - Test out different embedding and hidden dimensions
