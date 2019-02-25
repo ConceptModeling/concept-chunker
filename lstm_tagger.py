@@ -7,7 +7,7 @@ torch.manual_seed(37)
 
 class LSTMTagger(nn.Module):
 
-    def __init__(self, embedding_dim, hidden_dim, vocab_size, tagset_size, bidirectional=False):
+    def __init__(self, embedding_dim, hidden_dim, vocab_size, tagset_size, bidirectional=False, log=False):
         super(LSTMTagger, self).__init__()
         self.bidirectional = bidirectional
         self.hidden_dim = hidden_dim
@@ -25,6 +25,7 @@ class LSTMTagger(nn.Module):
             n = 1 
         self.hidden2tag = nn.Linear(n*hidden_dim, tagset_size)
         self.hidden = self.init_hidden()
+        self.should_log=log
 
     def init_hidden(self):
         # Before we've done anything, we dont have any hidden state.
@@ -42,6 +43,10 @@ class LSTMTagger(nn.Module):
         embeds = self.word_embeddings(sentence)
         lstm_out, self.hidden = self.lstm(
             embeds.view(len(sentence), 1, -1), self.hidden)
+        if self.should_log:
+            # print(self.hidden)
+            # print(self.hidden[1].data.numpy())
+            print(self.hidden[1].data.numpy()[0][0].tolist(), self.hidden[1].data.numpy()[1][0].tolist())
         tag_space = self.hidden2tag(lstm_out.view(len(sentence), -1))
         tag_scores = F.log_softmax(tag_space, dim=1)
         return tag_scores
