@@ -1,3 +1,4 @@
+#ignores last sentence if no period
 def read_data_from_file(filename, sep='\t'):
     data = []
     sent_counter = 0
@@ -17,3 +18,27 @@ def read_data_from_file(filename, sep='\t'):
                     sent_t[0].append(word)
                     sent_t[1].append(chunk_tag)
     return data
+
+def read_data_from_file_no_tags(filename):
+    data = []
+    sent_counter = 0
+    with open(filename) as infile:
+        lines = infile.readlines()
+        sents = []
+        for line in lines:
+            word = line.strip()
+            if word == '.':
+                if sents:
+                    data.append(sents)
+                    sents = []
+                    sent_counter += 1
+            else:
+                sents.append(word)
+    return data
+
+def write_tagged_data_to_file(data, filename, sep='\t'):
+    sent_counter = 0
+    with open(filename, 'w') as outfile:
+        for sent in data:
+            for word, tag in sent:
+                outfile.write(word + sep + tag + '\n')

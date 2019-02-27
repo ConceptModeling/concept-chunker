@@ -46,6 +46,8 @@ class LSTMTagger(nn.Module):
         if self.should_log:
             # print(self.hidden)
             # print(self.hidden[1].data.numpy())
+
+            # Prints out cell state
             print(self.hidden[1].data.numpy()[0][0].tolist(), self.hidden[1].data.numpy()[1][0].tolist())
         tag_space = self.hidden2tag(lstm_out.view(len(sentence), -1))
         tag_scores = F.log_softmax(tag_space, dim=1)
